@@ -12,7 +12,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <version>8.0.32</version>
             <type>jar</type>
         </dependency>
         
@@ -27,6 +27,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <exec.mainClass>pe.com.avanzado.proy.taller.mecanico.PROYTALLERMECANICO</exec.mainClass>
+        <exec.mainClass>pe.com.taller.Modelo.mvcPrincipal</exec.mainClass>
     </properties>
 </project>

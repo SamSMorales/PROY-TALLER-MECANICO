@@ -4,10 +4,15 @@
  */
 package pe.com.taller.Modelo;
 
-/**
- *
- * @author silva
- */
+import pe.com.taller.Vista.Login;
+
+
+
 public class mvcPrincipal {
+    
+    public static void main(String[] args) {
+        
+        Login.main(args);
+    }
     
 }

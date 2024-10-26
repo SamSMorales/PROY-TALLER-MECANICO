@@ -4,87 +4,69 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+import pe.com.taller.Vista.AdmPersonalRegistrado;
+import pe.com.taller.Vista.Registro;
 
 public class ConsultaUsuarios {
 
-    public boolean login(Usuarios usr) {
+    Connection conexion;
+    PreparedStatement sentencia_preparada;
+    ResultSet resultado;
+    String sql;
+    AdmPersonalRegistrado frmadmPersonalRegistrado = new AdmPersonalRegistrado();
+    Registro registro = new Registro();
 
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        Connection con = null;
+    public void buscarUsuarioRegistrado(String usuario, String contraseña) {
 
-        // Verifica que usr no sea null
-        if (usr == null || usr.getUsuario() == null || usr.getPassword() == null) {
-            
-            System.err.println("El objeto Usuarios o sus atributos son nulos.");
-            return false;
-        
-        }
-
-
-        String sql = "SELECT idusuarios, usuario, contraseña, rol FROM usuarios WHERE usuario = ?";
+        String tipo_permiso_usuario;
 
         try {
-            
-            Conexion conexion = new Conexion();
-            
-            con = null;
-            
-            if (con == null) {
-                
-            System.err.println("No se pudo establecer la conexión a la base de datos.");
-            return false; // Manejo de error si la conexión es nula
-        
-            }
-            
-            ps = con.prepareStatement(sql);
-            ps.setString(1, usr.getUsuario());
-            rs = ps.executeQuery();
 
-            if (rs.next()) {
-                 // Compara la contraseña
-                 
-                if (usr.getPassword().equals(rs.getString("contraseña"))) {
+            conexion = Conexion.conectar();
+            // sql = "SELECT usuario, contraseña FROM usuarios WHERE usuario= ' " + usuario + " ' && contraseña= ' " + contraseña + " ' ";
+            sql = "SELECT * FROM usuarios WHERE usuario= ' " + usuario + " ' && contraseña= ' " + contraseña + " ' ";
+            sentencia_preparada = conexion.prepareStatement(sql);
+            resultado = sentencia_preparada.executeQuery();
 
-                    usr.setIdUsuarios(rs.getInt("idusuarios"));
-                    usr.setUsuario(rs.getString("usuario"));
-                    usr.setRol(rs.getString("rol"));
+            if (resultado.next()) {
 
-                    return true; // login exitoso
+                usuario = resultado.getString("usuario");
+                contraseña = resultado.getString("contraseña");
 
-                } else {
+                if (usuario != null && contraseña != null) {
 
-                    return false; // Contraseña incorrecta
+                    tipo_permiso_usuario = resultado.getString("rol");
+                    switch (tipo_permiso_usuario) {
+
+                        case "administrador":
+                            frmadmPersonalRegistrado.setVisible(true);
+                            break;
+                        case "empleado":
+                            registro.setVisible(true);
+                            break;
+                    }
+
                 }
 
-            }
+            } else {
 
-            return false; // Usuario no encontrado
+                JOptionPane.showMessageDialog(null, "Error en el usuario o contraseña ingresada");
+
+            }
+            
+            conexion.close();
+            Conexion.desconectar();
+            
 
         } catch (SQLException e) {
 
-            Logger.getLogger(ConsultaUsuarios.class.getName()).log(Level.SEVERE, null, e);
-            return false;
-
-        } finally {
-            // Cierra los recursos en el bloque finally
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                Logger.getLogger(ConsultaUsuarios.class.getName()).log(Level.SEVERE, null, e);
-            }
+            System.out.println("Error : " + e);
 
         }
+
     }
 
+  
 }
